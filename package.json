@@ -1,0 +1,46 @@
+{
+  "name": "tree-sitter-jcl",
+  "version": "0.1.0",
+  "description": "JCL grammar for tree-sitter",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "lexer",
+    "jcl",
+    "mainframe",
+    "z/os"
+  ],
+  "author": "Simon Peleska",
+  "license": "MIT",
+  "scripts": {
+    "install": "node-gyp-build",
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test",
+    "parse": "tree-sitter parse"
+  },
+  "dependencies": {
+    "node-gyp-build": "^4.8.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.25.0"
+  },
+  "gypfile": true,
+  "tree-sitter": [
+    {
+      "scope": "source.jcl",
+      "file-types": [
+        "jcl",
+        "proc",
+        "prc"
+      ]
+    }
+  ],
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "prebuilds/**",
+    "bindings/node/*",
+    "queries/*",
+    "src/**"
+  ]
+}

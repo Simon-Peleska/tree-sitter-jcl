@@ -1,0 +1,361 @@
+================================================================================
+Job, step and DD statements
+================================================================================
+
+//PAYROLL  JOB (ACCT,123),'PAY RUN',CLASS=A,MSGCLASS=X
+//STEP1    EXEC PGM=PAY001,PARM='MODE=FULL'
+//STEPLIB  DD DISP=SHR,DSN=PROD.LOADLIB
+//         DD DISP=SHR,DSN=SYS1.LOADLIB
+//OUT      DD DSN=&&TEMP,DISP=(NEW,PASS),SPACE=(TRK,(10,5),RLSE)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))
+      (parameter
+        (value
+          (string)))
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (string)))))
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (dd_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (list
+                  (parameter
+                    (value
+                      (word)))
+                  (parameter
+                    (value
+                      (word))))))
+            (parameter
+              (value
+                (word)))))))))
+
+================================================================================
+Continuation with comments and a string across lines
+================================================================================
+
+//RUN1     JOB 'D83,B67','HOOPER',MSGCLASS=R,   FIRST LINE
+//*  a comment between continuation lines
+//             NOTIFY=&SYSUID
+//VSAM     DD AMP=('BUFSP=200,
+//             BUFNI=3')
+//S2       EXEC PGM=X,COND=(4,EQ) INLINE COMMENT
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (string)))
+      (parameter
+        (value
+          (string)))
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (continuation)
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (string))))))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word)))))))
+    (comment)))
+
+================================================================================
+Procedure call, overrides and in-stream procedure
+================================================================================
+
+//MYPROC   PROC MBR=DEFAULT
+//P1       EXEC PGM=&MBR
+//         PEND
+//S1       EXEC MYPROC,MBR=TEST
+//S2       EXEC PROC=OTHER
+//P1.SYSIN DD DUMMY
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (pend_statement)
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word))))))
+
+================================================================================
+JCLLIB, INCLUDE and SET
+================================================================================
+
+//         JCLLIB ORDER=(PROD.PROCLIB,TEST.PROCLIB)
+//         INCLUDE MEMBER=STDLIBS
+//         SET HLQ=PROD
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (jcllib_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))))
+  (include_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (set_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word))))))
+
+================================================================================
+In-stream data, delimiter and JES2 statement
+================================================================================
+
+/*JOBPARM SYSAFF=*
+//SYSIN    DD *
+  SORT FIELDS=(1,10,CH,A)
+/*
+//SYSTSIN  DD *
+ DSN SYSTEM(DB2P)
+//
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (jes2_statement)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (data_line)
+  (delimiter)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (data_line)
+  (null_statement))
+
+================================================================================
+IF, ELSE and ENDIF
+================================================================================
+
+//CHK      IF (STEP1.RC = 0 & ¬STEP1.ABEND) THEN
+//S3       EXEC PGM=OK
+//         ELSE
+//S4       EXEC PGM=FAIL
+//         ENDIF
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (name)
+    (condition
+      (word)
+      (operator)
+      (word)
+      (operator)
+      (operator)
+      (word)))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (else_statement)
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (endif_statement))
+
+================================================================================
+Sequence numbers in columns 73-80
+================================================================================
+
+//NUMBERED JOB                                                          00000100
+//*                                                                     00000200
+//S1       EXEC PGM=IEFBR14                                             00000300
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (job_statement
+    (name))
+  (sequence_number)
+  (comment)
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (sequence_number))
+
+================================================================================
+EXEC without operands is an error
+:error
+================================================================================
+
+//ABC EXEC
+
+--------------------------------------------------------------------------------
+
+
