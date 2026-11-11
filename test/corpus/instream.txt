@@ -1,0 +1,391 @@
+================================================================================
+DD * ends at the next JCL statement (spec DD * parameter)
+================================================================================
+
+//SYSUT1   DD *,SYMBOLS=(CNVTSYS,TESTDD),DCB=LRECL=222
+LOTS OF DATA TO FILL UP A LINE, FOLLOWED BY A LONG SYMBOL TO SEE &X
+Extra line to make DD * variable record length
+//SYSUT2   DD SYSOUT=(,)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))
+      (parameter
+        (keyword)
+        (parameter
+          (keyword)
+          (value
+            (word))))))
+  (instream_data)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (list))))))
+
+================================================================================
+DD DATA keeps // lines as data and ends at /* (spec DATA parameter)
+================================================================================
+
+//PREP.IN1   DD   DATA
+//STEP1  EXEC PGM=IEFBR14
+//* not a comment either
+/*
+//ADD.IN2   DD   *
+  data
+/*
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter))
+
+================================================================================
+DLM replaces the delimiter (spec delimiter statement example 1)
+================================================================================
+
+//JOB54    JOB   ,'C BROWN',MSGLEVEL=(2,0)
+//STEPA    EXEC PGM=SERS
+//DD1      DD   *
+  data
+/*       END OF DATA FOR DATA SET DD1
+//DD2      DD   DATA,DLM=AA
+//  data
+/*  data
+AA       END OF DATA FOR DATA SET DD2
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (string)))
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter))
+
+================================================================================
+DD * with DLM also ends at // on JES2
+================================================================================
+
+//DD1      DD *,DLM=AA
+/* data
+//STEP2    EXEC PGM=X
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (instream_data)
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word))))))
+
+================================================================================
+Quoted delimiters with doubled apostrophes and ampersands
+================================================================================
+
+//IN1      DD DATA,DLM='B'''
+/*
+B'
+//IN2      DD *,
+//            DLM='&&7'
+data
+&7
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (string)))))
+  (instream_data)
+  (delimiter)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (continuation)
+      (parameter
+        (keyword)
+        (value
+          (string)))))
+  (instream_data)
+  (delimiter))
+
+================================================================================
+No data between DD * and the next statement
+================================================================================
+
+//SYSIN    DD *
+//STEP2    EXEC PGM=X
+//IN       DD DATA
+/*
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (delimiter))
+
+================================================================================
+XMIT transmits records up to its delimiter (spec XMIT example 2)
+================================================================================
+
+//JOBC     JOB PW19,'DEPT 53'
+//X2       XMIT DEST=POKVMDD3.MVSGST34,DLM=AA
+//JOBB     JOB   1
+/*
+/*EOF
+AA
+//JOBD     JOB   2
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (value
+          (string)))))
+  (xmit_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter)
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word))))))
+
+================================================================================
+XMIT without DLM ends at /* (spec XMIT example 1)
+================================================================================
+
+//X1      XMIT DEST=KGNMVS45
+//JOBA    JOB   25FA64,'KEN KAHN'
+//S1      EXEC PGM=IEFBR14
+/*
+//JOBB    JOB   1
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (xmit_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter)
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word))))))
+
+================================================================================
+JES2 /*XMIT with DLM (spec /*XMIT example)
+================================================================================
+
+//JOBA     JOB 1
+/*XMIT   ATLANTA DLM=AA
+//JOBB     JOB 2
+/*
+AA
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (job_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (jes2_statement)
+  (instream_data)
+  (delimiter))
+
+================================================================================
+Data without a DD statement stays data_line
+================================================================================
+
+//S1       EXEC PGM=X
+  implicit SYSIN data
+/*
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (data_line)
+  (delimiter))
+
+================================================================================
+Empty data before a DLM delimiter, blank lines around data
+================================================================================
+
+//A        DD DATA,DLM=AA
+AA
+//B        DD *
+
+data
+
+/*
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (delimiter)
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (value
+          (word)))))
+  (instream_data)
+  (delimiter))

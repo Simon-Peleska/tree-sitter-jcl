@@ -9,9 +9,6 @@ error	ok	test9015.jcl
 error	ok	test9016.jcl
 error	ok	test9022.jcl
 error	ok	test9024.jcl
-ok	error	test0151.jcl
-ok	error	test0153.jcl
-ok	error	test0154.jcl
 ok	ok	test0001.jcl
 ok	ok	test0002.jcl
 ok	ok	test0003.jcl
@@ -162,7 +159,10 @@ ok	ok	test0147.jcl
 ok	ok	test0148.jcl
 ok	ok	test0149.jcl
 ok	ok	test0150.jcl
+ok	ok	test0151.jcl
 ok	ok	test0152.jcl
+ok	ok	test0153.jcl
+ok	ok	test0154.jcl
 ok	ok	test0155.jcl
 ok	ok	test0156.jcl
 ok	ok	test0157.jcl

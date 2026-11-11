@@ -275,7 +275,7 @@ In-stream data, delimiter and JES2 statement
       (parameter
         (value
           (word)))))
-  (data_line)
+  (instream_data)
   (delimiter)
   (dd_statement
     (name)
@@ -283,7 +283,7 @@ In-stream data, delimiter and JES2 statement
       (parameter
         (value
           (word)))))
-  (data_line)
+  (instream_data)
   (null_statement))
 
 ================================================================================

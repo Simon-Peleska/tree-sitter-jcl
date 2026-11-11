@@ -32,7 +32,9 @@ cp "$natan"/examples/*.jcl "$texts/"
 ls "$texts"/*.jcl >"$work/paths.txt"
 
 # tree-sitter exits 1 when any file has a parse error; that's an expected outcome here.
-(tree-sitter parse --grammar-path "$natan" --quiet --json-summary --paths "$work/paths.txt" || true) >"$work/natan-summary.txt"
+# natan's grammar is also named jcl; its own library dir keeps it out of
+# the cache this grammar is built into.
+(TREE_SITTER_LIBDIR="$work/lib" tree-sitter parse --grammar-path "$natan" --quiet --json-summary --paths "$work/paths.txt" || true) >"$work/natan-summary.txt"
 node -e '
 const fs = require("fs");
 const output = fs.readFileSync(process.argv[1], "utf8");

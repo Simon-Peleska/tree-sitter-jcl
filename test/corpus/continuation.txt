@@ -1,0 +1,179 @@
+================================================================================
+Comment continued by a non-blank column 72 (spec continuation example 3)
+================================================================================
+
+//STP4 EXEC PROC=BILLING,COND.PAID=((20,LT),EVEN),
+//    COND.LATE=(60,GT,FIND),
+//    COND.BILL=((20,GE),(30,LT,CHGE)) THIS STATEMENT CALLS            X
+//     THE BILLING PROCEDURE AND SPECIFIES RETURN CODE TESTS           X
+//     FOR THREE PROCEDURE STEPS.
+//         ENDIF  END OF THE TEST                                      X00000100
+//         ON TWO LINES
+//S2       EXEC PGM=NEXT
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (list
+                  (parameter
+                    (value
+                      (word)))
+                  (parameter
+                    (value
+                      (word))))))
+            (parameter
+              (value
+                (word))))))
+      (continuation)
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))
+      (continuation)
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (list
+                  (parameter
+                    (value
+                      (word)))
+                  (parameter
+                    (value
+                      (word))))))
+            (parameter
+              (value
+                (list
+                  (parameter
+                    (value
+                      (word)))
+                  (parameter
+                    (value
+                      (word)))
+                  (parameter
+                    (value
+                      (word))))))))))
+    (comment))
+  (endif_statement
+    (comment))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word))))))
+
+================================================================================
+Column 72 has no effect after a comma continuation
+================================================================================
+
+//DS1 DD DSNAME=INDS,DISP=OLD,    MY INPUT DATA SET                    X
+//     UNIT=SYSSQ
+//S2  EXEC PGM=X     COMMENT WITHOUT CONTINUATION                       00000200
+//     DD DUMMY
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (continuation)
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word))))
+    (comment))
+  (sequence_number)
+  (dd_statement
+    (operands
+      (parameter
+        (value
+          (word))))))
+
+================================================================================
+Comment after a blank may start with a comma (mapa test0123)
+================================================================================
+
+//DD7      DD DISP=OLD,UNIT=CART ,
+//*//         VOL=SER=(1,
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dd_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word))))
+    (comment))
+  (comment))
+
+================================================================================
+Sequence number after a trailing comment
+================================================================================
+
+//S1       EXEC PGM=X  COMMENT                                          00000300
+//         ENDIF  NOT CONTINUED                                         00000400
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (exec_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word))))
+    (comment))
+  (sequence_number)
+  (endif_statement
+    (comment))
+  (sequence_number))

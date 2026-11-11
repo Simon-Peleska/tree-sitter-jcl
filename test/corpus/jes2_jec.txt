@@ -1,0 +1,230 @@
+================================================================================
+Job group with GJOB and AFTER (spec chapter 30)
+================================================================================
+
+//MULTI    JOBGROUP
+//A        GJOB
+//B        GJOB
+//           AFTER NAME=A,
+//            WHEN=(RC=0)
+//D        GJOB
+//           AFTER NAME=B
+//MULTI    ENDGROUP
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (jobgroup_statement
+    (name))
+  (gjob_statement
+    (name))
+  (gjob_statement
+    (name))
+  (after_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (continuation)
+      (parameter
+        (keyword)
+        (condition
+          (word)
+          (operator)
+          (word)))))
+  (gjob_statement
+    (name))
+  (after_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (endgroup_statement
+    (name)))
+
+================================================================================
+JOBSET, SJOB and ENDSET (spec chapter 30)
+================================================================================
+
+//SET1    JOBSET
+//JOBA    SJOB
+//JOBB    SJOB  comment
+//SET1    ENDSET
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (jobset_statement
+    (name))
+  (sjob_statement
+    (name))
+  (sjob_statement
+    (name)
+    (comment))
+  (endset_statement
+    (name)))
+
+================================================================================
+BEFORE and CONCURRENT with name lists (spec chapter 30)
+================================================================================
+
+//GRP1     JOBGROUP OWNER=IBMUSER,PASSWORD=IBMUSER
+//JOB1     GJOB FLUSHTYP=ANYFLUSH
+//          BEFORE NAME=(JOB2,JOB3),ACTION=FAIL
+//          CONCURRENT NAME=(JOB3,JOB4)
+//GRP1     ENDGROUP
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (jobgroup_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (gjob_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (before_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))
+      (parameter
+        (keyword)
+        (value
+          (word)))))
+  (concurrent_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (list
+            (parameter
+              (value
+                (word)))
+            (parameter
+              (value
+                (word))))))))
+  (endgroup_statement
+    (name)))
+
+================================================================================
+Conditions with blanks, nesting and continuation
+================================================================================
+
+//RUN00013 JOBGROUP ERROR=(RC = 1 | (RC > 17 & RC < 37)) comment
+//RUN00011 JOBGROUP ERROR=(RC = 1 | RC = 3 |
+//             RC = 9)
+// BEFORE NAME=JOB001,WHEN=((RC EQ 4 OR RC EQ 8) |
+//  (ABENDCC = U4038 | !RUN)),
+//  OTHERWISE=FAIL
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (jobgroup_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (condition
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (word))))
+    (comment))
+  (jobgroup_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (condition
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (continuation)
+          (word)
+          (operator)
+          (word)))))
+  (before_statement
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (word)))
+      (parameter
+        (keyword)
+        (condition
+          (word)
+          (word)
+          (word)
+          (word)
+          (word)
+          (word)
+          (word)
+          (operator)
+          (continuation)
+          (word)
+          (operator)
+          (word)
+          (operator)
+          (operator)
+          (word)))
+      (continuation)
+      (parameter
+        (keyword)
+        (value
+          (word))))))
+
+================================================================================
+NOTIFY statement (spec chapter 22)
+================================================================================
+
+//NFY       NOTIFY EMAIL='smith@domain.com',WHEN='(!RUN | RC!=0 | ABEND)'
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (notify_statement
+    (name)
+    (operands
+      (parameter
+        (keyword)
+        (value
+          (string)))
+      (parameter
+        (keyword)
+        (value
+          (string))))))

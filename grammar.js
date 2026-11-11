@@ -12,7 +12,6 @@
 
 const OPERAND_STATEMENTS = {
   job_statement: 'JOB',
-  dd_statement: 'DD',
   proc_statement: 'PROC',
   set_statement: 'SET',
   jcllib_statement: 'JCLLIB',
@@ -21,8 +20,19 @@ const OPERAND_STATEMENTS = {
   cntl_statement: 'CNTL',
   export_statement: 'EXPORT',
   schedule_statement: 'SCHEDULE',
-  xmit_statement: 'XMIT',
   command_statement: 'COMMAND',
+  notify_statement: 'NOTIFY',
+};
+
+// JES2 execution control statements (job groups). Their WHEN= and ERROR=
+// operands take an IF-style condition, which may contain blanks.
+const JEC_STATEMENTS = {
+  jobgroup_statement: 'JOBGROUP',
+  gjob_statement: 'GJOB',
+  jobset_statement: 'JOBSET',
+  before_statement: 'BEFORE',
+  after_statement: 'AFTER',
+  concurrent_statement: 'CONCURRENT',
 };
 
 const PLAIN_STATEMENTS = {
@@ -30,68 +40,145 @@ const PLAIN_STATEMENTS = {
   else_statement: 'ELSE',
   endif_statement: 'ENDIF',
   endcntl_statement: 'ENDCNTL',
+  sjob_statement: 'SJOB',
+  endset_statement: 'ENDSET',
+  endgroup_statement: 'ENDGROUP',
 };
 
 function statementStart($) {
   return seq('//', optional(field('name', $.name)), $._blank);
 }
 
-function operandTail($) {
-  return optional(seq(
-    $._blank,
-    optional(seq(
-      field('operands', $.operands),
-      optional(seq($._blank, optional(alias($._trailing_comment, $.comment)))),
-    )),
-  ));
+// Each statement kind shares one hidden tail rule instead of inlining its
+// own copy, which keeps the parse table small.
+function operandTail($, operands) {
+  return seq($._blank, optional(seq(field('operands', operands), optional($._comment_tail))));
 }
 
-function commentTail($) {
-  return optional(seq($._blank, optional(alias($._trailing_comment, $.comment))));
+function operandList($, first, rest = first) {
+  return choice(
+    seq(first, repeat(seq($._separator, optional(rest)))),
+    repeat1(seq($._separator, optional(rest))),
+  );
 }
 
 module.exports = grammar({
   name: 'jcl',
 
-  externals: $ => [$.sequence_number],
+  // src/scanner.c explains why these need a scanner. _data_end is a
+  // zero-width token at the start of the line that ends in-stream data.
+  externals: $ => [
+    $.sequence_number,
+    $.instream_data,
+    $._data_end,
+    $._instream_marker,
+    $._dlm_word,
+    $._dlm_string,
+    $._dlm_delimiter,
+    $._jes2_xmit,
+    'XMIT',
+    $._trailing_comment,
+  ],
 
   extras: $ => [$.sequence_number],
 
   rules: {
     source_file: $ => seq(
       optional($._line),
-      repeat(seq($._newline, optional($._line))),
+      repeat(seq($._newline, optional($._data_end), optional($._line))),
     ),
 
     _line: $ => choice(
       $.exec_statement,
+      $.dd_statement,
+      $.xmit_statement,
       ...Object.keys(OPERAND_STATEMENTS).map(name => $[name]),
       ...Object.keys(PLAIN_STATEMENTS).map(name => $[name]),
+      ...Object.keys(JEC_STATEMENTS).map(name => $[name]),
       $.if_statement,
       $.statement,
       $.null_statement,
       $.comment,
       $.jes2_statement,
+      alias($._jes2_xmit, $.jes2_statement),
       $.delimiter,
+      alias($._dlm_delimiter, $.delimiter),
+      $.instream_data,
       $.data_line,
     ),
 
     ...Object.fromEntries(Object.entries(OPERAND_STATEMENTS).map(([name, op]) => [
       name,
-      $ => seq(statementStart($), field('operation', op), operandTail($)),
+      $ => seq(statementStart($), field('operation', op), optional($._operand_tail)),
     ])),
 
     ...Object.fromEntries(Object.entries(PLAIN_STATEMENTS).map(([name, op]) => [
       name,
-      $ => seq(statementStart($), field('operation', op), commentTail($)),
+      $ => seq(statementStart($), field('operation', op), optional($._comment_tail)),
     ])),
+
+    ...Object.fromEntries(Object.entries(JEC_STATEMENTS).map(([name, op]) => [
+      name,
+      $ => seq(statementStart($), field('operation', op), optional($._jec_tail)),
+    ])),
+
+    _operand_tail: $ => operandTail($, $.operands),
+    _jec_tail: $ => operandTail($, alias($._jec_operands, $.operands)),
+    _dd_tail: $ => optional($._dd_tail),
+    _xmit_tail: $ => optional($._xmit_tail),
+    _comment_tail: $ => seq($._blank, optional(alias($._trailing_comment, $.comment))),
+
+    _jec_operands: $ => operandList($, $._jec_parameter),
+
+    _jec_parameter: $ => choice($.parameter, alias($._condition_assignment, $.parameter)),
+
+    _condition_assignment: $ => seq(
+      field('key', alias(choice('WHEN', 'ERROR'), $.keyword)),
+      '=',
+      field('value', alias($._condition_group, $.condition)),
+    ),
+
+    _condition_group: $ => seq('(', repeat(choice($._condition_token, $._condition_group)), ')'),
+
+    dd_statement: $ => seq(
+      statementStart($),
+      field('operation', 'DD'),
+      operandTail($, alias($._dd_operands, $.operands)),
+    ),
+
+    xmit_statement: $ => seq(
+      statementStart($),
+      field('operation', 'XMIT'),
+      operandTail($, alias($._xmit_operands, $.operands)),
+    ),
+
+    _dd_operands: $ => operandList(
+      $,
+      choice(alias($._instream_parameter, $.parameter), $._dlm_or_parameter),
+      $._dlm_or_parameter,
+    ),
+
+    _xmit_operands: $ => operandList($, $._dlm_or_parameter),
+
+    _instream_parameter: $ => field('value', alias($._instream_value, $.value)),
+    _instream_value: $ => alias($._instream_marker, $.word),
+
+    _dlm_or_parameter: $ => choice($.parameter, alias($._dlm_assignment, $.parameter)),
+
+    _dlm_assignment: $ => seq(
+      field('key', alias('DLM', $.keyword)),
+      '=',
+      optional(field('value', alias($._dlm_value, $.value))),
+    ),
+
+    _dlm_value: $ => choice(alias($._dlm_word, $.word), alias($._dlm_string, $.string)),
 
     exec_statement: $ => seq(
       statementStart($),
       field('operation', 'EXEC'),
       $._blank,
       field('operands', $.operands),
-      commentTail($),
+      optional($._comment_tail),
     ),
 
     if_statement: $ => seq(
@@ -99,26 +186,23 @@ module.exports = grammar({
       field('operation', 'IF'),
       field('condition', $.condition),
       'THEN',
-      commentTail($),
+      optional($._comment_tail),
     ),
 
-    condition: $ => repeat1(choice(
+    condition: $ => repeat1(choice($._condition_token, '(', ')')),
+
+    _condition_token: $ => choice(
       $._blank,
       alias(/\r?\n\/\/[ \t]+/, $.continuation),
-      '(',
-      ')',
       alias(/[=<>¬^&|!]+/, $.operator),
       alias(/[A-Za-z0-9@#$&._+-]+/, $.word),
-    )),
+    ),
 
-    statement: $ => seq(statementStart($), field('operation', $.operation), operandTail($)),
+    statement: $ => seq(statementStart($), field('operation', $.operation), optional($._operand_tail)),
 
     null_statement: $ => seq('//', optional($._blank)),
 
-    operands: $ => choice(
-      seq($.parameter, repeat(seq($._separator, optional($.parameter)))),
-      repeat1(seq($._separator, optional($.parameter))),
-    ),
+    operands: $ => operandList($, $.parameter),
 
     parameter: $ => choice($._assignment, field('value', $.value)),
 
@@ -130,15 +214,7 @@ module.exports = grammar({
 
     value: $ => repeat1(choice($.word, $.string, $.list)),
 
-    list: $ => seq(
-      '(',
-      choice(
-        seq($.parameter, repeat(seq($._separator, optional($.parameter)))),
-        repeat1(seq($._separator, optional($.parameter))),
-        blank(),
-      ),
-      ')',
-    ),
+    list: $ => seq('(', optional(operandList($, $.parameter)), ')'),
 
     // A comma may end the line, optionally followed by a comment; the next
     // operand then starts after `//` and blanks on the next line, with comment
@@ -166,7 +242,6 @@ module.exports = grammar({
     operation: _ => /[A-Z@#$][A-Z0-9@#$]*/,
 
     comment: _ => /\/\/\*[^\r\n]*/,
-    _trailing_comment: _ => /[^\s][^\r\n]*/,
 
     jes2_statement: _ => /\/\*[A-Z$][^\r\n]*/,
     delimiter: _ => /\/\*([ \t][^\r\n]*)?/,

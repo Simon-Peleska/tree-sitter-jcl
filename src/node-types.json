@@ -1,5 +1,97 @@
 [
   {
+    "type": "after_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "AFTER",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "before_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "BEFORE",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "cntl_statement",
     "named": true,
     "fields": {
@@ -75,6 +167,52 @@
         "types": [
           {
             "type": "COMMAND",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "concurrent_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "CONCURRENT",
             "named": false
           }
         ]
@@ -233,6 +371,42 @@
     }
   },
   {
+    "type": "endgroup_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ENDGROUP",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "endif_statement",
     "named": true,
     "fields": {
@@ -252,6 +426,42 @@
         "types": [
           {
             "type": "ENDIF",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "endset_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ENDSET",
             "named": false
           }
         ]
@@ -344,6 +554,52 @@
         "types": [
           {
             "type": "EXPORT",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "gjob_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "GJOB",
             "named": false
           }
         ]
@@ -545,6 +801,98 @@
     }
   },
   {
+    "type": "jobgroup_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "JOBGROUP",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "jobset_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "JOBSET",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "list",
     "named": true,
     "fields": {},
@@ -558,6 +906,52 @@
         },
         {
           "type": "parameter",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "notify_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operands": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "operands",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "NOTIFY",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
           "named": true
         }
       ]
@@ -651,6 +1045,10 @@
         "multiple": false,
         "required": false,
         "types": [
+          {
+            "type": "condition",
+            "named": true
+          },
           {
             "type": "parameter",
             "named": true
@@ -838,6 +1236,42 @@
     }
   },
   {
+    "type": "sjob_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "name",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "SJOB",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "source_file",
     "named": true,
     "root": true,
@@ -846,6 +1280,14 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "after_statement",
+          "named": true
+        },
+        {
+          "type": "before_statement",
+          "named": true
+        },
         {
           "type": "cntl_statement",
           "named": true
@@ -856,6 +1298,10 @@
         },
         {
           "type": "comment",
+          "named": true
+        },
+        {
+          "type": "concurrent_statement",
           "named": true
         },
         {
@@ -879,7 +1325,15 @@
           "named": true
         },
         {
+          "type": "endgroup_statement",
+          "named": true
+        },
+        {
           "type": "endif_statement",
+          "named": true
+        },
+        {
+          "type": "endset_statement",
           "named": true
         },
         {
@@ -891,11 +1345,19 @@
           "named": true
         },
         {
+          "type": "gjob_statement",
+          "named": true
+        },
+        {
           "type": "if_statement",
           "named": true
         },
         {
           "type": "include_statement",
+          "named": true
+        },
+        {
+          "type": "instream_data",
           "named": true
         },
         {
@@ -908,6 +1370,18 @@
         },
         {
           "type": "job_statement",
+          "named": true
+        },
+        {
+          "type": "jobgroup_statement",
+          "named": true
+        },
+        {
+          "type": "jobset_statement",
+          "named": true
+        },
+        {
+          "type": "notify_statement",
           "named": true
         },
         {
@@ -932,6 +1406,10 @@
         },
         {
           "type": "set_statement",
+          "named": true
+        },
+        {
+          "type": "sjob_statement",
           "named": true
         },
         {
@@ -1086,11 +1564,23 @@
     "named": false
   },
   {
+    "type": "AFTER",
+    "named": false
+  },
+  {
+    "type": "BEFORE",
+    "named": false
+  },
+  {
     "type": "CNTL",
     "named": false
   },
   {
     "type": "COMMAND",
+    "named": false
+  },
+  {
+    "type": "CONCURRENT",
     "named": false
   },
   {
@@ -1106,7 +1596,15 @@
     "named": false
   },
   {
+    "type": "ENDGROUP",
+    "named": false
+  },
+  {
     "type": "ENDIF",
+    "named": false
+  },
+  {
+    "type": "ENDSET",
     "named": false
   },
   {
@@ -1115,6 +1613,10 @@
   },
   {
     "type": "EXPORT",
+    "named": false
+  },
+  {
+    "type": "GJOB",
     "named": false
   },
   {
@@ -1131,6 +1633,18 @@
   },
   {
     "type": "JOB",
+    "named": false
+  },
+  {
+    "type": "JOBGROUP",
+    "named": false
+  },
+  {
+    "type": "JOBSET",
+    "named": false
+  },
+  {
+    "type": "NOTIFY",
     "named": false
   },
   {
@@ -1151,6 +1665,10 @@
   },
   {
     "type": "SET",
+    "named": false
+  },
+  {
+    "type": "SJOB",
     "named": false
   },
   {
@@ -1175,6 +1693,10 @@
   },
   {
     "type": "delimiter",
+    "named": true
+  },
+  {
+    "type": "instream_data",
     "named": true
   },
   {
